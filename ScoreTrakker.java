@@ -14,18 +14,19 @@ public class ScoreTrakker {
 
 	private ArrayList<Student> students;
 	
-	private void loadDataFromFile(String filename){
+	private void loadDataFromFile(String filename) throws FileNotFoundException {
 		students = new ArrayList<Student>();
-		try {
-			Scanner fin = new Scanner(new File(filename));
-			while (fin.hasNext()){
-				String name = fin.nextLine();
-				int score = Integer.parseInt(fin.nextLine());
+		Scanner fin = new Scanner(new File(filename));
+		while (fin.hasNext()){
+			String name = fin.nextLine();
+			String prescore = fin.nextLine();
+			try {
+				int score = Integer.parseInt(prescore);
 				students.add(new Student(name, score));
 			}
-		} 
-		catch (FileNotFoundException e) {
-			e.printStackTrace();
+			catch (NumberFormatException nfe){
+				System.err.println("Incorrect format for " + name + ", not a valid score: " + prescore + "\n");
+			}
 		}
 	}
 	
@@ -55,8 +56,18 @@ public class ScoreTrakker {
 	}
 	
 	public void processFiles(){
-		loadDataFromFile("scores.txt");
-		printInOrder();
+
+		String[] files = {"scores.txt", "badscore.txt", "nofile.txt"};
+		for (String file : files){
+			try {
+				loadDataFromFile(file);
+				printInOrder();
+				System.out.println("\n\n");
+			} 
+			catch (FileNotFoundException e) {
+				System.err.println("Cannot find the file: " + file);
+			}
+		}
 	}
 	
 }
