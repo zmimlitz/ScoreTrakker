@@ -14,18 +14,21 @@ public class ScoreTrakker {
 
 	private ArrayList<Student> students;
 	
-	private void loadDataFromFile(String filename) throws FileNotFoundException {
+	private void loadDataFromFile(String filename) throws Exception {
 		students = new ArrayList<Student>();
 		Scanner fin = new Scanner(new File(filename));
 		while (fin.hasNext()){
 			String name = fin.nextLine();
 			String prescore = fin.nextLine();
+			if (name.indexOf(' ') == -1){
+				throw new Exception("Could not load the file: \'" + name + "\' is not a valid name.");
+			}
 			try {
 				int score = Integer.parseInt(prescore);
 				students.add(new Student(name, score));
 			}
 			catch (NumberFormatException nfe){
-				System.err.println("Incorrect format for " + name + ", not a valid score: " + prescore + "\n");
+				System.out.println("Incorrect format for " + name + ", not a valid score: " + prescore + "\n");
 			}
 		}
 	}
@@ -57,16 +60,19 @@ public class ScoreTrakker {
 	
 	public void processFiles(){
 
-		String[] files = {"scores.txt", "badscore.txt", "nofile.txt"};
+		String[] files = {"scores.txt", "badscore.txt", "nofile.txt", "badname.txt"};
 		for (String file : files){
 			try {
 				loadDataFromFile(file);
 				printInOrder();
-				System.out.println("\n\n");
 			} 
 			catch (FileNotFoundException e) {
-				System.err.println("Cannot find the file: " + file);
+				System.out.println("Cannot find the file: " + file);
 			}
+			catch (Exception e){
+				System.out.println(e.getMessage());
+			}
+			System.out.println("\n");
 		}
 	}
 	
